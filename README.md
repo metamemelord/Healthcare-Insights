@@ -4,31 +4,31 @@ This repo contains source code for the dashboard project by team Motherboard.
 
 For both projects (front-end and back-end), these commands are available:
 
-# Build
+### Build
 
 ```
 npm run build
 ```
 
-# Build and watch
+### Build and watch
 
 ```
 npm run build:watch
 ```
 
-# Run Development Server
+### Run Development Server
 
 ```
 npm run dev
 ```
 
-# Run Production Server
+### Run Production Server
 
 ```
 npm run start
 ```
 
-# Run Tests
+### Run Tests
 
 ```
 npm run test
