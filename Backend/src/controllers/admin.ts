@@ -11,21 +11,21 @@ export default class AdminControllers {
     const username = req.body.username;
     const password = req.body.password;
     User.findOne({ username })
-      .then((userFromDb) => {
+      .then(userFromDb => {
         if (!userFromDb) {
           bcrypt
             .hash(password, 12)
-            .then((hashedPassword) => {
+            .then(hashedPassword => {
               const user = new User({
                 password_digest: hashedPassword,
-                username,
+                username
               });
               return user.save();
             })
-            .then((result) => {
+            .then(result => {
               res.status(201).json({ message: "User added" });
             })
-            .catch((err) => {
+            .catch(err => {
               console.log(err);
               (req as any).httpStatusCode = 400;
               return next(err);
@@ -35,36 +35,42 @@ export default class AdminControllers {
           next(new Error("User already exists"));
         }
       })
-      .catch((err) => {
+      .catch(err => {
         console.error(err);
       });
-  }
+  };
+
   public login = (req: Request, res: Response, next: NextFunction) => {
     const username = req.body.username;
     const password = req.body.password;
-    console.log("TEst");
     User.findOne({ username })
-      .then((user) => {
+      .then(user => {
         if (!user) {
           (req as any).httpStatusCode = 404;
-          next(new Error("User does not exist"));
+          throw new Error("User does not exist");
         } else {
           bcrypt
             .compare(password, (user as any).password_digest)
-            .then((success) => {
-              if (success) { return res.status(200).send("Ok"); } else { throw new Error("Invalid credentials"); }
+            .then(success => {
+              if (success) {
+                return res.status(200).send("Ok");
+              } else {
+                throw new Error("Invalid credentials");
+              }
             })
-            .catch((err) => {
-              console.log(err);
-              (req as any).httpStatusCode = 400;
-              return next(err);
+            .catch(err => {
+              if (!(req as any).httpStatusCode) {
+                (req as any).httpStatusCode = 400;
+              }
+              throw next(err);
             });
         }
       })
       .catch((err: Error) => {
-        console.log(err);
-        (req as any).httpStatusCode = 400;
-        return next(err);
+        if (!(req as any).httpStatusCode) {
+          (req as any).httpStatusCode = 500;
+        }
+        next(err);
       });
-  }
+  };
 }

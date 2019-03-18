@@ -1,48 +1,68 @@
 <template>
-  <main>
-    <div class="logo">
-      <img src="../assets/logo.png" alt="philips">
-    </div>
-    <div class="login-form">
-      <div class="form-control" :class="{'input-focussed': emailFocussed}">
-        <label for="email" :class="{'label-focussed': emailLabel}">Email</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          @focus="setFocussed"
-          @blur="removeFocussed"
-          v-model="email"
-          autocomplete="off"
-        >
-      </div>
-      <div class="form-control" :class="{'input-focussed': passwordFocussed}">
-        <label for="password" :class="{'label-focussed': passwordLabel}">Password</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          @focus="setFocussed"
-          @blur="removeFocussed"
-          v-model="password"
-          autocomplete="off"
-        >
-      </div>
-      <div class="form-control">
-        <button type="submit" class="button" @click="isSubmitted=!isSubmitted">
-          <i class="fas" :class="submitButtonClass"></i>
-        </button>
-      </div>
-    </div>
-  </main>
+  <transition name="slide-up">
+    <main>
+      <template>
+        <div class="error-banner" v-if="errorMessage.length">
+          <span>{{ errorMessage }}</span>
+        </div>
+        <div class="logo">
+          <img src="../assets/logo.png" alt="philips">
+        </div>
+        <div class="login-form">
+          <div
+            class="form-control"
+            :class="{'input-focussed': emailDirty && (emailFocussed || !isUsernameValid), 'input-invalid': emailDirty && !isUsernameValid}"
+          >
+            <label for="email" :class="{'label-focussed': emailLabel}">Username</label>
+            <input
+              type="text"
+              name="email"
+              id="email"
+              @focus="setFocussed"
+              @blur="removeFocussed"
+              @keyup.enter="validateAndLogin"
+              v-model="email"
+              autocomplete="off"
+            >
+          </div>
+          <div
+            class="form-control"
+            :class="{'input-focussed': passwordDirty && (passwordFocussed || !isPasswordValid), 'input-invalid': passwordDirty && !isPasswordValid}"
+          >
+            <label for="password" :class="{'label-focussed': passwordLabel}">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              @focus="setFocussed"
+              @blur="removeFocussed"
+              @keyup.enter="validateAndLogin"
+              v-model="password"
+              autocomplete="off"
+            >
+          </div>
+          <div class="form-control">
+            <button class="button" @click="validateAndLogin" :disabled="!isFormValid">
+              <i class="fas" :class="submitButtonClass"></i>
+            </button>
+          </div>
+        </div>
+      </template>
+    </main>
+  </transition>
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   data() {
     return {
+      errorMessage: "",
       email: "",
       password: "",
+      emailDirty: false,
+      passwordDirty: false,
       emailLabel: false,
       passwordLabel: false,
       emailFocussed: false,
@@ -50,16 +70,39 @@ export default {
       isSubmitted: false
     };
   },
+  mounted() {
+    let el = document.getElementById("email");
+    el.focus();
+  },
   computed: {
     submitButtonClass() {
       return this.isSubmitted
         ? "fa-circle-notch fa-spin"
         : "fa-chevron-circle-right";
+    },
+    isUsernameValid() {
+      return this.email.length >= 5;
+    },
+    isPasswordValid() {
+      return this.password.length > 0;
+    },
+    isFormValid() {
+      return !this.isSubmitted && this.isUsernameValid && this.isPasswordValid;
     }
   },
   methods: {
+    validateAndLogin: function() {
+      if (this.isFormValid) {
+        this.login();
+      } else if (!this.isUsernameValid) {
+        document.getElementById("email").focus();
+      } else {
+        document.getElementById("password").focus();
+      }
+    },
     setFocussed: function(event) {
       let el = event.target;
+      this[el.id + "Dirty"] = true;
       this[el.id + "Focussed"] = true;
       this[el.id + "Label"] = true;
     },
@@ -67,6 +110,40 @@ export default {
       let el = event.target;
       if (this[el.id].length === 0) this[el.id + "Label"] = false;
       this[el.id + "Focussed"] = false;
+    },
+    login: function() {
+      this.isSubmitted = true;
+      let data = {
+        username: this.username,
+        password: this.password
+      };
+      axios
+        .post("http://localhost:3000/login", {
+          username: this.email,
+          password: this.password
+        })
+        .then(result => {
+          this.$store.dispatch("login", {
+            username: this.email,
+            isLoggedIn: true
+          });
+          this.$router.push("/");
+        })
+        .catch(err => {
+          const statusCode = err.response.status;
+          switch (statusCode) {
+            case 404:
+              this.errorMessage = "User does not exist";
+              break;
+            case 400:
+              this.errorMessage = "Incorrect password";
+              break;
+            default:
+              this.errorMessage = "Server messed up, it seems! :(";
+              break;
+          }
+          this.isSubmitted = false;
+        });
     }
   }
 };
@@ -83,9 +160,22 @@ main {
     #0096ee 100%
   );
 
+  .error-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    color: white;
+    background: rgba(255, 0, 0, 0.6);
+    padding: 0.6rem;
+    span {
+      padding: 1rem;
+    }
+  }
+
   .logo {
     img {
-      margin-top: 5rem;
+      margin-top: 7rem;
       max-height: 10rem;
     }
   }
@@ -95,8 +185,6 @@ main {
     width: 20rem;
     .form-control {
       position: relative;
-      overflow-x: hidden !important;
-      overflow-y: visible !important;
       margin: 1.5rem 0.5rem;
       input,
       button {
@@ -127,10 +215,6 @@ main {
           opacity: 0.5;
         }
       }
-      input[type="password"] {
-        font: small-caption;
-        font-size: 1rem;
-      }
       button {
         width: auto;
         border: none;
@@ -149,24 +233,29 @@ main {
         transition: all 0.2s ease-in-out;
       }
       &:after {
-        height: 1px;
         position: absolute;
-        transition: all 0.3s ease-in-out;
-        left: -100%;
+        transition: all 0.4s ease-in-out;
+        left: 0;
         bottom: 0;
         content: "";
         width: 100%;
-        border-bottom: 1px solid turquoise;
+        transform: scaleX(0);
+        border-bottom: 2px solid #0096ee;
       }
     }
   }
 }
-
 .input-focussed {
   &:after {
-    transform: translateX(100%);
+    transform: scaleX(1) !important;
   }
 }
+.input-invalid {
+  &:after {
+    border-bottom: 2px solid red !important;
+  }
+}
+
 .label-focussed {
   left: 0.5rem !important;
   top: -0.5rem !important;

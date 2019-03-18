@@ -1,6 +1,8 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <transition name="slide-up" mode="out-in">
+      <router-view></router-view>
+    </transition>
   </div>
 </template>
 
@@ -21,14 +23,9 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
-#nav {
-  padding: 30px;
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
+.slide-up-leave-active {
+  transform: translateY(-50vh);
+  opacity: 0;
+  transition: all 400ms ease-in-out;
 }
 </style>

@@ -4,11 +4,6 @@ export default class Server {
   public app: express.Application;
   constructor() {
     this.app = express();
-    this.app.use((error: Error, req: any, res: any, next: any) => {
-      console.error(error.name);
-      res.status(req.httpStatusCode ? req.httpStatusCode : 500).send(error);
-      next();
-    });
   }
 
   public setMiddleWares(middlewares: any[]) {

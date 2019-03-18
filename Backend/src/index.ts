@@ -12,6 +12,11 @@ const adminRouter = new AdminRouter().instance;
 server.setMiddleWares([bodyParser.json()]);
 server.setRouters([patientRouter, adminRouter]);
 
+server.app.use((error: Error, req: any, res: any, next: any) => {
+  console.error(error);
+  res.status(req.httpStatusCode ? req.httpStatusCode : 500).send(error);
+});
+
 mongoose
   .connect(
     "mongodb+srv://metamemelord:hehehasdele@dashboard-db-wvq8d.azure.mongodb.net/dashboard",
@@ -24,6 +29,5 @@ mongoose
     fsWatcher.start();
   })
   .catch(err => {
-    console.error(err);
     console.error("Could not connect to DB");
   });
