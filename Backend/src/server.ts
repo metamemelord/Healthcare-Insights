@@ -22,9 +22,9 @@ export default class Server {
     const port = process.env.PORT || 3000;
     this.app.listen(port, (error: Error) => {
       if (error) {
-        console.error(error);
+        console.error(error); // tslint:disable-line
       } else {
-        console.log(`Server listening on port ${port}`);
+        console.log(`Server listening on port ${port}`); // tslint:disable-line
       }
     });
   }

@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import express from "express";
 
 import bcrypt from "bcryptjs";
 import UserModel from "../models/user";
@@ -11,22 +10,22 @@ export default class AdminControllers {
     const username = req.body.username;
     const password = req.body.password;
     User.findOne({ username })
-      .then(userFromDb => {
+      .then((userFromDb: any) => {
         if (!userFromDb) {
           bcrypt
             .hash(password, 12)
-            .then(hashedPassword => {
+            .then((hashedPassword: string) => {
               const user = new User({
                 password_digest: hashedPassword,
                 username
               });
               return user.save();
             })
-            .then(result => {
-              res.status(201).json({ message: "User added" });
+            .then((result) => {
+              res.status(201).json({ message: "User added", username: (result as any).username });
             })
-            .catch(err => {
-              console.log(err);
+            .catch((err: Error) => {
+              console.log(err); // tslint:disable-line
               (req as any).httpStatusCode = 400;
               return next(err);
             });
@@ -35,34 +34,34 @@ export default class AdminControllers {
           next(new Error("User already exists"));
         }
       })
-      .catch(err => {
-        console.error(err);
+      .catch((err: Error) => {
+        next(err);
       });
-  };
+  }
 
   public login = (req: Request, res: Response, next: NextFunction) => {
     const username = req.body.username;
     const password = req.body.password;
     User.findOne({ username })
-      .then(user => {
+      .then((user: any) => {
         if (!user) {
           (req as any).httpStatusCode = 404;
           throw new Error("User does not exist");
         } else {
           bcrypt
             .compare(password, (user as any).password_digest)
-            .then(success => {
+            .then((success: any) => {
               if (success) {
                 return res.status(200).send("Ok");
               } else {
                 throw new Error("Invalid credentials");
               }
             })
-            .catch(err => {
+            .catch((err: Error) => {
               if (!(req as any).httpStatusCode) {
                 (req as any).httpStatusCode = 400;
               }
-              throw next(err);
+              next(err);
             });
         }
       })
@@ -72,5 +71,5 @@ export default class AdminControllers {
         }
         next(err);
       });
-  };
+  }
 }

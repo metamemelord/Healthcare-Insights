@@ -70,6 +70,9 @@ export default {
       isSubmitted: false
     };
   },
+  created() {
+    document.title = "Login - Team Motherboard";
+  },
   mounted() {
     let el = document.getElementById("email");
     el.focus();
@@ -130,17 +133,21 @@ export default {
           this.$router.push("/");
         })
         .catch(err => {
-          const statusCode = err.response.status;
-          switch (statusCode) {
-            case 404:
-              this.errorMessage = "User does not exist";
-              break;
-            case 400:
-              this.errorMessage = "Incorrect password";
-              break;
-            default:
-              this.errorMessage = "Server messed up, it seems! :(";
-              break;
+          if (!err.response) {
+            this.errorMessage = "Is CORS blocking the requests?";
+          } else {
+            const statusCode = err.response.status;
+            switch (statusCode) {
+              case 404:
+                this.errorMessage = "User does not exist";
+                break;
+              case 400:
+                this.errorMessage = "Incorrect password";
+                break;
+              default:
+                this.errorMessage = "Server messed up, it seems! :(";
+                break;
+            }
           }
           this.isSubmitted = false;
         });
