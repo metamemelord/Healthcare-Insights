@@ -1,11 +1,12 @@
 import chokidar from "chokidar";
 import path from "path";
 import HL7MessageParsingWorker from "./HL7MessageParsingWorker";
-import { postPatient } from "./PatientPostService";
+import PatientService from "./PatientService";
 
 const currentPath = path.join(__dirname, "../data/");
 
 export default class FsWatcherService {
+  private patientService = new PatientService();
   private watcher: any;
   private hl7Parser: HL7MessageParsingWorker = new HL7MessageParsingWorker();
   public start() {
@@ -24,7 +25,7 @@ export default class FsWatcherService {
     try {
       const parsedData = await this.hl7Parser.parse(filePath);
       // console.log(parsedData); // tslint:disable-line
-      const result = await postPatient(parsedData);
+      const result = await this.patientService.postPatient(parsedData);
       console.log(result); // tslint:disable-line
     } catch (err) {
       console.log(err); // tslint:disable-line
