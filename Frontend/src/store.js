@@ -6,7 +6,25 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   state: {
     isLoggedIn: false,
-    username: ""
+    username: "",
+    patients: [],
+    config: {},
+    configSet: false,
+    configResetNeeded: false
+  },
+  getters: {
+    getLoggedInUsername: state => {
+      return state.username;
+    },
+    allPatients: state => {
+      return state.patients;
+    },
+    config: state => {
+      return state.config;
+    },
+    configSet: state => {
+      return state.configSet;
+    }
   },
   mutations: {
     PERFORM_LOGIN: (state, userData) => {
@@ -19,6 +37,17 @@ export default new Vuex.Store({
       state.isLoggedIn = false;
       state.username = "";
       localStorage.clear();
+    },
+    POPULATE_PATIENTS: (state, patients) => {
+      state.patients = patients;
+    },
+    SET_CONFIG: (state, config) => {
+      state.config = config;
+      state.configSet = true;
+      state.configResetNeeded = false;
+    },
+    RESET_CONFIG: state => {
+      state.configResetNeeded = true;
     }
   },
   actions: {
@@ -27,6 +56,15 @@ export default new Vuex.Store({
     },
     logout: ({ commit }) => {
       commit("PERFORM_LOGOUT");
+    },
+    populatePatients: ({ commit }, patients) => {
+      commit("POPULATE_PATIENTS", patients);
+    },
+    setConfig: ({ commit }, config) => {
+      commit("SET_CONFIG", config);
+    },
+    resetConfig: ({ commit }, config) => {
+      commit("RESET_CONFIG");
     }
   }
 });

@@ -2,6 +2,7 @@
   <header>
     <img src="../assets/logo.png" alt="Philips">
     <div>
+      <i @click="resetConfig()" class="fas fa-undo"></i>&nbsp;&nbsp;
       <i @click="logout()" class="fas fa-sign-out-alt"></i>
     </div>
   </header>
@@ -10,6 +11,10 @@
 <script>
 export default {
   methods: {
+    resetConfig() {
+      this.$store.dispatch("resetConfig");
+      this.$router.push("/config");
+    },
     logout() {
       this.$store.dispatch("logout");
       this.$router.push("/login");

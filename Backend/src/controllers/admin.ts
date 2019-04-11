@@ -21,8 +21,11 @@ export default class AdminControllers {
               });
               return user.save();
             })
-            .then((result) => {
-              res.status(201).json({ message: "User added", username: (result as any).username });
+            .then(result => {
+              res.status(201).json({
+                message: "User added",
+                username: (result as any).username
+              });
             })
             .catch((err: Error) => {
               console.log(err); // tslint:disable-line
@@ -37,7 +40,7 @@ export default class AdminControllers {
       .catch((err: Error) => {
         next(err);
       });
-  }
+  };
 
   public login = (req: Request, res: Response, next: NextFunction) => {
     const username = req.body.username;
@@ -71,5 +74,49 @@ export default class AdminControllers {
         }
         next(err);
       });
-  }
+  };
+
+  public getConfig = (req: Request, res: Response, next: NextFunction) => {
+    const username = req.query.u;
+    User.findOne({ username })
+      .then((user: any) => {
+        if (!user) {
+          (req as any).httpStatusCode = 404;
+          throw new Error("User does not exist");
+        } else {
+          if (user.config) return res.send(user.config);
+          else return res.status(404).send();
+        }
+      })
+      .catch((err: Error) => {
+        if (!(req as any).httpStatusCode) {
+          (req as any).httpStatusCode = 500;
+        }
+        next(err);
+      });
+  };
+
+  public setConfig = (req: Request, res: Response, next: NextFunction) => {
+    const username = req.body.username;
+    const config = req.body.config;
+    User.findOne({ username })
+      .then((user: any) => {
+        if (!user) {
+          (req as any).httpStatusCode = 404;
+          throw new Error("User does not exist");
+        } else {
+          user.config = config;
+          return user.save();
+        }
+      })
+      .then((result: any) => {
+        res.status(201).send("OK");
+      })
+      .catch((err: Error) => {
+        if (!(req as any).httpStatusCode) {
+          (req as any).httpStatusCode = 500;
+        }
+        next(err);
+      });
+  };
 }

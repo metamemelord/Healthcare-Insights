@@ -1,8 +1,9 @@
 <template>
   <div class="home">
     <app-header></app-header>
+    <h1>{{ pageTitle }}</h1>
     <div class="graph-container">
-      <component :is="activeComponent" :chartdata="chartdata" :options="options"></component>
+      <component :is="activeComponent"></component>
     </div>
   </div>
 </template>
@@ -10,60 +11,63 @@
 <script>
 import appHeader from "@/components/Header";
 import vaccinationComponent from "@/components/graphPages/vaccination.vue";
-//2import vaccinationComponent from "@/components/graphs/Vaccination.vue";
-import someTemp from "@/components/graphs/someTemp.vue";
-import pieChart from "@/components/graphs/PieChart.vue";
-import doughNut from "@/components/graphs/Doughnut.vue";
+import babyRetention from "@/components/graphs/BabyRetention.vue";
+import predictedBedAvailability from "@/components/graphs/BedAvailability.vue";
+import patientClass from "@/components/graphs/PatientClass.vue";
+import hospitalFacility from "@/components/graphs/HospitalFacility.vue";
+import mostConsultedDoctor from "@/components/graphs/MostConsultedDoctor.vue";
+import mostReferredDoctor from "@/components/graphs/MostReferredDoctor.vue";
 
 export default {
   name: "home",
   data() {
     return {
       activeComponent: "vaccination-component",
-      chartdata: {
-        datacollection: {
-          labels: ["January", "February"],
-          datasets: [
-            {
-              label: "Data One",
-              backgroundColor: "#f87979",
-              data: [40, 20]
-            }
-          ]
-        }
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
+      pageTitle: "Vaccination"
     };
   },
   created() {
     document.title = "Dashboard - Team Motherboard";
   },
   mounted() {
-    let i = 0;
-    const count = 4;
+    let i = 1;
+    const count = 7;
     setInterval(() => {
       i += 1;
-      if (true) {
+      if (i % count === 0) {
         this.activeComponent = "vaccination-component";
+        this.pageTitle = "Vaccination";
       } else if (i % count === 1) {
-        this.activeComponent = "some-temp";
+        this.activeComponent = "baby-retention";
+        this.pageTitle = "Babies retained (change this to provide clarity)";
       } else if (i % count === 2) {
-        this.activeComponent = "pie-chart";
+        this.activeComponent = "patient-class";
+        this.pageTitle = "Patient Class";
+      } else if (i % count === 3) {
+        this.activeComponent = "predicted-bed-availability";
+        this.pageTitle = "Predicted Bed Availability";
+      } else if (i % count === 4) {
+        this.activeComponent = "most-consulted-doctor";
+        this.pageTitle = "Most consulted doctor";
+      } else if (i % count === 5) {
+        this.activeComponent = "most-referred-doctor";
+        this.pageTitle = "Most referred doctor";
       } else {
-        this.activeComponent = "dough-nut";
+        this.activeComponent = "hospital-facility";
+        this.pageTitle = "Hospital Facilities";
       }
       i %= count;
-    }, 10000);
+    }, 2000);
   },
   components: {
     appHeader,
     vaccinationComponent,
-    someTemp,
-    pieChart,
-    doughNut
+    babyRetention,
+    predictedBedAvailability,
+    patientClass,
+    hospitalFacility,
+    mostConsultedDoctor,
+    mostReferredDoctor
   }
 };
 </script>
@@ -74,7 +78,7 @@ export default {
   align-items: center;
   margin: 0 auto;
   width: 95vw;
-  height: calc(92vh);
+  height: calc(92vh - 8rem);
   align-items: center;
   justify-content: center;
 }

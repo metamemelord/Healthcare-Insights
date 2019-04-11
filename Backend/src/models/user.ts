@@ -6,14 +6,15 @@ export default class UserModel {
   private userSchema: mongoose.Schema;
   constructor() {
     this.userSchema = new Schema({
+      config: Object,
       password_digest: {
         required: true,
-        type: String,
+        type: String
       },
       username: {
         required: true,
-        type: String,
-      },
+        type: String
+      }
     });
   }
 
