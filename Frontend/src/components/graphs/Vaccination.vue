@@ -6,7 +6,6 @@
 import { Doughnut } from "vue-chartjs";
 import moment from "moment";
 
-// console.log(Bar)
 export default {
   extends: Doughnut,
   data() {
@@ -18,7 +17,7 @@ export default {
     chartData() {
       const patientData = this.$store.getters.allPatients;
       const babyData = [0, 0, 0, 0, 0, 0];
-      const now = moment();
+      const now = moment().add(1, "m");
       const backgroundColor = [
         this.getRandomColor(),
         this.getRandomColor(),
@@ -58,8 +57,7 @@ export default {
         datasets: [
           {
             backgroundColor,
-            data: [5, 10, 24, 32, 23, 34]
-            // data: babyData
+            data: babyData
           }
         ],
         options: {

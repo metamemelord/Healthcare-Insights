@@ -33,11 +33,11 @@ export default {
         this.getRandomColor()
       ];
       for (let patient of patientData) {
-        if (patient.retention_indicator === "I") {
+        if (patient.patient_class === "I") {
           patientCount[0]++;
-        } else if (patient.retention_indicator === "O") {
+        } else if (patient.patient_class === "O") {
           patientCount[1]++;
-        } else if (patient.retention_indicator === "P") {
+        } else if (patient.patient_class === "P") {
           patientCount[2]++;
         } else {
           patientCount[3]++;
@@ -48,8 +48,7 @@ export default {
         datasets: [
           {
             backgroundColor,
-            data: [5, 10, 34, 54]
-            // data: babyData
+            data: patientCount
           }
         ],
         options: {
@@ -64,7 +63,10 @@ export default {
       this.colors.push(this.getRandomColor());
     }
     // Overwriting base render method with actual data.
-    this.renderChart(this.chartData);
+    this.renderChart(this.chartData, {
+      responsive: true,
+      maintainAspectRatio: false
+    });
   }
 };
 </script>

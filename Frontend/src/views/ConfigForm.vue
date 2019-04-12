@@ -90,7 +90,6 @@ export default {
       }
     },
     validateAndSaveToDb() {
-      console.log(this.config);
       if (
         this.config.numberOfBeds <= 0 ||
         this.config.numberOfBabyBeds <= 0 ||
@@ -100,7 +99,6 @@ export default {
         this.errorMessage = "Empty/Zero fields are not allowed";
       } else {
         this.isSubmitted = true;
-        console.log(this.$store.getters.getLoggedInUsername);
         axios
           .post("http://localhost:3000/config", {
             username: localStorage.getItem("username"),

@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import axios from "axios";
 import appHeader from "@/components/Header";
 import vaccinationComponent from "@/components/graphPages/vaccination.vue";
 import babyRetention from "@/components/graphs/BabyRetention.vue";
@@ -23,7 +24,7 @@ export default {
   data() {
     return {
       activeComponent: "vaccination-component",
-      pageTitle: "Vaccination"
+      pageTitle: "Vaccination Details"
     };
   },
   created() {
@@ -36,28 +37,37 @@ export default {
       i += 1;
       if (i % count === 0) {
         this.activeComponent = "vaccination-component";
-        this.pageTitle = "Vaccination";
+        this.pageTitle = "Vaccination Details";
       } else if (i % count === 1) {
         this.activeComponent = "baby-retention";
-        this.pageTitle = "Babies retained (change this to provide clarity)";
+        this.pageTitle = "Baby Retention Rate";
       } else if (i % count === 2) {
         this.activeComponent = "patient-class";
-        this.pageTitle = "Patient Class";
+        this.pageTitle = "Patient Class Metrics";
       } else if (i % count === 3) {
-        this.activeComponent = "predicted-bed-availability";
-        this.pageTitle = "Predicted Bed Availability";
-      } else if (i % count === 4) {
-        this.activeComponent = "most-consulted-doctor";
-        this.pageTitle = "Most consulted doctor";
-      } else if (i % count === 5) {
-        this.activeComponent = "most-referred-doctor";
-        this.pageTitle = "Most referred doctor";
-      } else {
         this.activeComponent = "hospital-facility";
-        this.pageTitle = "Hospital Facilities";
+        this.pageTitle = "Hospital Facility Metrics";
+      } else if (i % count === 4) {
+        this.activeComponent = "predicted-bed-availability";
+        this.pageTitle = "Prediction of Bed Availability";
+      } else if (i % count === 5) {
+        this.activeComponent = "most-consulted-doctor";
+        this.pageTitle = "Doctor Consultation Metrics";
+      } else {
+        this.activeComponent = "most-referred-doctor";
+        this.pageTitle = "Doctor Referral Metrics";
       }
       i %= count;
-    }, 2000);
+      axios
+        .get("http://localhost:3000/")
+        .then(result => {
+          return Promise.resolve(result.data);
+        })
+        .then(data => {
+          this.$store.dispatch("populatePatients", data);
+        })
+        .catch();
+    }, 8000);
   },
   components: {
     appHeader,
@@ -72,7 +82,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 .graph-container {
   display: flex;
   align-items: center;
@@ -81,6 +91,9 @@ export default {
   height: calc(92vh - 8rem);
   align-items: center;
   justify-content: center;
+  > canvas {
+    max-height: 90vh;
+  }
 }
 </style>
 
