@@ -8,6 +8,15 @@
         <div class="logo">
           <img src="../assets/logo.png" alt="philips">
         </div>
+        <h4 style="color: white;">App mode</h4>
+        <div class="app-modes">
+          <div :class="{active: config.mode === 'admin'}" @click="config.mode='admin'">
+            <i class="fa fa-user"></i>&nbsp;&nbsp;Admin
+          </div>
+          <div @click="config.mode='team'" :class="{active: config.mode === 'team'}">
+            <i class="fa fa-users"></i>&nbsp;&nbsp;Team
+          </div>
+        </div>
         <div class="config-form">
           <div>
             <h4># of beds:</h4>
@@ -58,6 +67,7 @@ export default {
       errorMessage: "",
       isSubmitted: false,
       config: {
+        mode: "admin",
         numberOfBeds: 0,
         numberOfBabyBeds: 0,
         departments: [],
@@ -151,8 +161,23 @@ main {
   .logo {
     img {
       margin-top: 3rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       max-height: 10rem;
+    }
+  }
+
+  .app-modes {
+    color: white;
+    display: flex;
+    justify-content: center;
+    div {
+      cursor: pointer;
+      padding: 1rem;
+      text-align: center;
+      margin: 1rem;
+      box-shadow: 0px 0px 8px 3px rgba(0, 0, 0, 0.25);
+      width: 20rem;
+      border-radius: 5px;
     }
   }
 
@@ -200,6 +225,10 @@ main {
       }
     }
   }
+}
+.active {
+  background: white !important;
+  color: #333 !important;
 }
 .input-focussed {
   &:after {

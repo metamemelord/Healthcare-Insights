@@ -7,11 +7,7 @@
 </template>
 
 <script>
-import header from "./components/Header.vue";
 export default {
-  components: {
-    appHeader: header
-  },
   created() {
     document.title = "Team Motherboard";
   }

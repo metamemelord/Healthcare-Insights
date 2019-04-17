@@ -19,7 +19,7 @@ export default {
         "Saturday",
         "Sunday"
       ],
-      totalBeds: 30
+      totalBeds: this.$store.getters.config.numberOfBeds
     };
   },
   methods: {
@@ -44,7 +44,7 @@ export default {
     beds() {
       const patientData = this.$store.getters.allPatients;
       const bedData = [];
-      let countToday = 20 || patientData.length; // Change this
+      let countToday = patientData.length; // Change this
       let day = moment().endOf("d");
       for (let idx = 0; idx < 7; idx++) {
         day = day.add(1, "d");
@@ -55,8 +55,7 @@ export default {
             count++;
           }
         }
-        bedData.push(countToday - count);
-        countToday -= count;
+        bedData.push(count);
       }
       return bedData;
     }

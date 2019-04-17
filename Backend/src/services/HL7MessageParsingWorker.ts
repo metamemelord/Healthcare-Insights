@@ -32,8 +32,13 @@ export default class HL7MessageParsingWorker {
   }
   private parseDate(arg: string): string {
     if (arg) {
-      return `${arg.substr(0, 4)}-${arg.substr(4, 2)}-` +
-      `${arg.substr(6, 2)} ${arg.substr(8, 2)}:${arg.substr(10, 2)}:${arg.substr(12, 2)}`;
+      return (
+        `${arg.substr(0, 4)}-${arg.substr(4, 2)}-` +
+        `${arg.substr(6, 2)} ${arg.substr(8, 2)}:${arg.substr(
+          10,
+          2
+        )}:${arg.substr(12, 2)}`
+      );
     }
     return "";
   }
@@ -44,9 +49,16 @@ export default class HL7MessageParsingWorker {
         parsedMessage.get("PV1.7.3").toString() +
         " " +
         parsedMessage.get("PV1.7.2").toString(),
+      date_of_admission: moment(
+        this.parseDate(parsedMessage.get("MSH.7").toString())
+      ),
       diagnostic_service: parsedMessage.get("OBR.24").toString(),
       dob: moment(this.parseDate(parsedMessage.get("PID.7").toString())),
-      expected_discharge_date:  moment(this.parseDate(parsedMessage.get("PV2.9").toString())),
+      employment_illness_indicator: parsedMessage.get("PV2.15").toString(),
+      escort_required: parsedMessage.get("OBR.42").toString(),
+      expected_discharge_date: moment(
+        this.parseDate(parsedMessage.get("PV2.9").toString())
+      ),
       hospital_service: parsedMessage.get("PV1.10").toString(),
       mrn_number: parsedMessage.get("PID.3.1").toString(),
       new_born_indicator: parsedMessage.get("PV2.36").toString(),
@@ -56,6 +68,9 @@ export default class HL7MessageParsingWorker {
         " " +
         parsedMessage.get("PV1.8.2").toString(),
       retention_indicator: parsedMessage.get("PV2.37").toString(),
+      special_program_code: parsedMessage.get("PV2.18").toString(),
+      transport_arranged: parsedMessage.get("OBR.41").toString(),
+      transport_mode: parsedMessage.get("OBR.30").toString(),
       trigger_event: parsedMessage.get("MSH.9.2").toString()
     };
   }

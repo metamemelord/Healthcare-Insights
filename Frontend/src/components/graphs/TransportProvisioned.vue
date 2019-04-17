@@ -18,8 +18,7 @@ export default {
         "Friday",
         "Saturday",
         "Sunday"
-      ],
-      totalBabies: this.$store.getters.config.numberOfBeds
+      ]
     };
   },
   methods: {
@@ -35,52 +34,65 @@ export default {
       const labels = [];
       let today = moment().isoWeekday();
       for (let idx = 0; idx < 7; idx++) {
-        labels.push(this.days[today % 7]);
+        labels.push(this.days[(today - 1) % 7]);
         today++;
       }
       return labels;
     }
   },
   computed: {
-    retainedBabies() {
+    transportProvisionedData() {
       const patientData = this.$store.getters.allPatients;
-      const retainedBabyData = [];
       let day = moment()
         .endOf("d")
         .subtract(8, "d");
+      const data = [[], []];
       for (let idx = 0; idx < 7; idx++) {
         day = day.add(1, "d");
-        let count = 0;
+        let count1 = 0;
+        let count2 = 0;
         for (let patient of patientData) {
-          let dt = moment(patient.expected_discharge_date).endOf("d");
+          let dt = moment(patient.date_of_admission).endOf("d");
           if (
             day.format("x") === dt.format("x") &&
-            patient.retention_indicator === "Y"
+            patient.transport_arranged === "A"
           ) {
-            count++;
+            count1++;
+          } else {
+            count2++;
           }
         }
-        retainedBabyData.push(Math.floor(2 + Math.random() * 10));
+        data[0].push(count1);
+        data[1].push(count2);
       }
-      return [2, 3, 14, 3, 6, 12, 5];
+      const labels = ["YES", "NO"];
+      return {
+        labels,
+        data
+      };
     }
   },
   mounted() {
+    let finalData = this.transportProvisionedData;
+    finalData = {
+      labels: ["YES", "NO"],
+      data: [[1, 2, 3, 4, 3, 23, 4], [1, 3, 4, 3, 23, 2, 4]]
+    };
     this.renderChart(
       {
         labels: this.getLabels(),
         datasets: [
           {
             type: "bar",
-            label: "Occupied",
+            label: finalData.labels[0],
             backgroundColor: "red",
-            data: this.retainedBabies
+            data: finalData.data[0]
           },
           {
             type: "bar",
-            label: "Vacant",
+            label: finalData.labels[1],
             backgroundColor: "#12c44c",
-            data: this.retainedBabies.map(el => this.totalBabies - el)
+            data: finalData.data[1]
           }
         ]
       },
