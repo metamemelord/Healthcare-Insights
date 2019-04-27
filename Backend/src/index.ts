@@ -1,4 +1,5 @@
 import bodyParser from "body-parser";
+import cors from "cors";
 import dotenv from "dotenv";
 import mongoose from "mongoose";
 import AdminRouter from "./routes/admin";
@@ -10,7 +11,7 @@ const patientRouter = new PatientRouter().instance;
 const adminRouter = new AdminRouter().instance;
 dotenv.config();
 
-server.setMiddleWares([bodyParser.json()]);
+server.setMiddleWares([bodyParser.json(), cors()]);
 server.setRouters([patientRouter, adminRouter]);
 
 server.app.use((error: Error, req: any, res: any, next: any) => {
