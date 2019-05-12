@@ -1,8 +1,14 @@
-# Team-Motherboard-Dashboard
+# Healthcare Insights
 
-This repo contains source code for the dashboard project by team Motherboard.
+This repo contains source code for the Healthcare Insights project by team Motherboard.
 
-For both projects (front-end and back-end), these commands are available:
+### Run the application
+
+```
+docker-compose up
+```
+
+Projects can also be run individually. For both projects (front-end and back-end), these commands are available:
 
 ### Build
 
