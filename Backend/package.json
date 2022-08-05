@@ -23,7 +23,7 @@
     "express": "^4.16.4",
     "hl7parser": "^1.0.1",
     "moment": "^2.24.0",
-    "mongoose": "^5.4.18"
+    "mongoose": "^5.7.5"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.2",
